@@ -1,0 +1,34 @@
+// テストデータ
+/* テストデータ */
+{
+  "intValue": 1,
+  "floatValue": 3.14,
+  "stringValue": "テスト",
+  "byteArrayValue": "44GC44GE44GG44GI44GK", // BASE64
+  "children": [
+    {
+      "intValue": 1001,
+      "stringValue": "テスト１００１"
+    },
+    {
+      "intValue": 1002,
+      "stringValue": "テスト１００２"
+    }
+  ],
+  "boolExample": {
+    "boolValue": true,
+    "boolSampleValue": "yes",
+    "boolOneZeroValue": 0,
+    "boolYesNoValue": "Yes"
+  },
+  "dateTimeExample": {
+    "dateTimeValue": "2020/11/22 12:23:45",
+    "dateTimeYmdValue": "20201122",
+    "dateTimeYmHyphenValue": "2020-11"
+  },
+  "enumExample": {
+    "statusValue": 1,
+    "statusStringValue": "End",
+    "statusCustomStringValue": "begin"
+  }
+}
