@@ -8,7 +8,7 @@ namespace JsonSerializerExample
     public class BoolSampleConverter : JsonConverter<bool>
     {
         public override bool Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-            => reader.GetString().Equals("yes");
+            => reader.GetString().Equals("yes"); // "yes"ならtrue、それ以外はfalse
         public override void Write(Utf8JsonWriter writer, bool value, JsonSerializerOptions options)
             => writer.WriteStringValue(value ? "yes" : "no");
     }
@@ -98,18 +98,24 @@ namespace JsonSerializerExample
     public class StatusEnumStringConverter : JsonConverter<Status>
     {
         public override Status Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-            => (reader.GetString()) switch
+        {
+            switch (reader.GetString())
             {
-                "begin" => Status.Start,
-                "finish" => Status.End,
-                _ => default,
-            };
+                case "begin": return Status.Start;
+                case "finish": return Status.End;
+                default: return default;
+            }
+        }
         public override void Write(Utf8JsonWriter writer, Status value, JsonSerializerOptions options)
-            => writer.WriteStringValue(value switch
+        {
+            string result;
+            switch (value)
             {
-                Status.Start => "begin",
-                Status.End => "finish",
-                _ => string.Empty,
-            });
+                case Status.Start: result = "begin"; break;
+                case Status.End: result = "finish"; break;
+                default: result = string.Empty; break;
+            }
+            writer.WriteStringValue(result);
+        }
     }
 }
