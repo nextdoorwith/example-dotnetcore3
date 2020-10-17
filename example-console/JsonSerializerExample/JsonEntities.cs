@@ -24,6 +24,8 @@ namespace JsonSerializerExample
         // 列挙型
         public EnumExampleElement EnumExample { get; set; }
 
+        // 任意クラス
+        public ClassExampleElement ClassExample { get; set; }
     }
 
     public class NestedDummyElement
@@ -66,6 +68,20 @@ namespace JsonSerializerExample
 
         [JsonConverter(typeof(StatusEnumStringConverter))]
         public Status StatusCustomStringValue { get; set; }
+    }
+
+    public class ClassExampleElement
+    {
+        public string SiteName { get; set; }
+        public UriElement Uri { get; set; }
+    }
+
+    [JsonConverter(typeof(UrlElementConverter))]
+    public class UriElement
+    {
+        public string Scheme { get; set; }
+        public string Hostname { get; set; }
+        public int PortNumber { get; set; }
     }
 
     public enum Status

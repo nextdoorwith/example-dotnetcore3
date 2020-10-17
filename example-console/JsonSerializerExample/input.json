@@ -30,5 +30,9 @@
     "statusValue": 1,
     "statusStringValue": "End",
     "statusCustomStringValue": "begin"
+  },
+  "classExample": {
+    "siteName": "テスト",
+    "uri": "http://www.example.com"
   }
 }

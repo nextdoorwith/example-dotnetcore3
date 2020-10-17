@@ -118,4 +118,25 @@ namespace JsonSerializerExample
             writer.WriteStringValue(result);
         }
     }
+
+    public class UrlElementConverter : JsonConverter<UriElement>
+    {
+        public override UriElement Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            var uri = new Uri(reader.GetString());
+            return new UriElement()
+            {
+                Scheme = uri.Scheme,
+                Hostname = uri.Host,
+                PortNumber = uri.Port
+            };
+        }
+
+        public override void Write(Utf8JsonWriter writer, UriElement value, JsonSerializerOptions options)
+        {
+            var uri = new Uri($"{value.Scheme}://{value.Hostname}:{value.PortNumber}");
+            writer.WriteStringValue(uri.AbsoluteUri);
+        }
+    }
+
 }
