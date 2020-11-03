@@ -4,12 +4,13 @@ using System.IO;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Unicode;
+using System.Threading.Tasks;
 
 namespace JsonSerializerExample
 {
     class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             Console.WriteLine("Example1 ======================");
             Example1.Run();
@@ -18,7 +19,7 @@ namespace JsonSerializerExample
             Example2.Run();
 
             Console.WriteLine("Example3 ======================");
-            Example3.Run();
+            await Example3.Run();
         }
 
     }
