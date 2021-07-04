@@ -10,39 +10,29 @@ namespace ExampleUtils.Utils
     public static class NumberUtils
     {
         /// <summary>
-        /// 上位4ビットを保持するマスク
-        /// </summary>
-        private const byte Upper4Mask = 0b_1111_0000;
-
-        /// <summary>
-        /// 下位4ビットを保持するマスク
-        /// </summary>
-        private const byte Lower4Mask = 0b_0000_1111;
-
-        /// <summary>
         /// ゾーン10進数: ゾーン部(ASCIIコード使用時)
         /// </summary>
-        private const char ZonedDecAsciiZonePart = '3'; // 0b_0011_0000
+        private const char ZonedDecAsciiZonePart = '3'; // 0b_0011
 
         /// <summary>
         /// ゾーン10進数: 符号部 符号なし・正(ASCIIコード使用時)
         /// </summary>
-        private const char ZonedDecAsciiSignPartPlus = '3'; // 0b_0011_0000
+        private const char ZonedDecAsciiSignPartPlus = '3'; // 0b_0011
 
         /// <summary>
         /// ゾーン10進数: 符号部 負(ASCIIコード使用時)
         /// </summary>
-        private const char ZonedDecAsciiSignPartMinus = '7'; // 0b_0111_0000
+        private const char ZonedDecAsciiSignPartMinus = '7'; // 0b_0111
 
         /// <summary>
         /// パック10進数: 符号部 正(ASCIIコード使用時)
         /// </summary>
-        private const char PackedDecSignPartPlus = 'C';
+        private const char PackedDecSignPartPlus = 'C'; // 0b_1100
 
         /// <summary>
         /// パック10進数: 符号部 負(ASCIIコード使用時)
         /// </summary>
-        private const char PackedDecSignPartMinus = 'D';
+        private const char PackedDecSignPartMinus = 'D'; // 0b_1101
 
         /// <summary>
         /// 整数からゾーン10進数を生成する。
