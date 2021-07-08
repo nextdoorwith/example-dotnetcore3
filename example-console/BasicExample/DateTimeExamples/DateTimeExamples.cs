@@ -1,7 +1,9 @@
 ﻿using BasicExample.Misc;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
+using System.Threading;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -20,12 +22,17 @@ namespace BasicExample.DateTimeExamples
         public void Example1()
         {
             // システム日時の取得
-            var now = DateTime.Now;
-            Console.WriteLine(now);
+            Console.WriteLine(DateTime.Now);    // "2021/07/08 21:30:06"
+            Console.WriteLine(DateTime.Today);  // "2021/07/08 0:00:00"
+            Console.WriteLine(DateTime.UtcNow); // "2021/07/08 12:30:06"
 
             // 特定日時の生成
             DateTime dt = new DateTime(2001, 2, 3, 4, 5, 6, 987);
             Console.WriteLine(dt); // "2001/02/03 4:05:06"
+
+            // 最小・最大
+            Console.WriteLine(DateTime.MinValue.ToString("O")); // "0001-01-01T00:00:00.0000000"
+            Console.WriteLine(DateTime.MaxValue.ToString("O")); // "9999-12-31T23:59:59.9999999"
 
             // 年/月/日/時/分/秒の取得
             Console.WriteLine(dt.Date);        // "2001/02/03 0:00:00"
@@ -42,7 +49,7 @@ namespace BasicExample.DateTimeExamples
             Console.WriteLine((int)dt.DayOfWeek); // 6 (cf. Sunday = 0)
         }
 
-        [Fact(DisplayName = "ゾーン変換")]
+        [Fact(DisplayName = "タイムゾーン変換")]
         public void Example2()
         {
             // ローカルゾーン情報
@@ -54,8 +61,28 @@ namespace BasicExample.DateTimeExamples
             // ローカルゾーン・UTC時刻変換
             DateTime local = new DateTime(2023, 4, 5, 13, 34, 56, 987);
             DateTime utc = local.ToUniversalTime();
-            Console.WriteLine(local); // "2023/04/05 13:34:56"
-            Console.WriteLine(utc);   // "2023/04/05 4:34:56"
+            Console.WriteLine(local);     // "2023/04/05 13:34:56" (UTC+9:00)
+            Console.WriteLine(utc);       // "2023/04/05 4:34:56"  (UTC+0:00)
+
+            // 任意のタイムゾーンの日時に変換
+            TimeZoneInfo zone1 = TimeZoneInfo.FindSystemTimeZoneById("Russian Standard Time");
+            DateTime zone1dt = TimeZoneInfo.ConvertTime(local, zone1);
+            Console.WriteLine(zone1dt);   // "2023/04/05 7:34:56"  (UTC+3:00)
+        }
+
+        [Fact(DisplayName = "サポートするタイムゾーン一覧")]
+        public void Example2a()
+        {
+            var timeZones = TimeZoneInfo.GetSystemTimeZones();
+            foreach(var tz in timeZones)
+                Console.WriteLine("[{0,-31}]: {2}", tz.Id, tz.BaseUtcOffset, tz.DisplayName);
+            // ...
+            // [Cape Verde Standard Time       ]: (UTC-01:00) カーボベルデ諸島
+            // [UTC                            ]: (UTC) Coordinated Universal Time
+            // [Sao Tome Standard Time         ]: (UTC+00:00) サントメ
+            // [Russian Standard Time          ]: (UTC+03:00) モスクワ、サンクトペテルブルク
+            // [Tokyo Standard Time            ]: (UTC+09:00) 大阪、札幌、東京
+            // ...
         }
 
         [Fact(DisplayName = "文字列変換")]
@@ -74,7 +101,7 @@ namespace BasicExample.DateTimeExamples
 
             DateTime dt = new DateTime(2023, 4, 5, 13, 34, 56, 987);
             Console.WriteLine(dt.ToString());                    // "2023/04/05 13:34:56"
-            Console.WriteLine(dt.ToString("O"));                 // "2023-04-05T13:34:56.9870000"
+            Console.WriteLine(dt.ToString("O"));                 // "2023-04-05T13:34:56.9870000" (ISO8601)
             Console.WriteLine(dt.ToString("yyyyMMdd"));          // "20230405"
             Console.WriteLine(dt.ToString("yyyyMMddHHmmssfff")); // "20230405133456987"
             Console.WriteLine(dt.ToShortDateString());           // "2023/04/05"
@@ -105,25 +132,31 @@ namespace BasicExample.DateTimeExamples
             // DateTimeでは演算子が定義されているので+-で操作可
             // https://docs.microsoft.com/ja-jp/dotnet/api/system.datetime?view=netcore-3.1#operators
 
+            // 日時の差分
             DateTime dt1a = new DateTime(2023, 4, 5, 21, 34, 46, 789);
             DateTime dt1b = new DateTime(2023, 4, 6, 23, 37, 50, 900);
             TimeSpan interval = dt1b - dt1a;
-
             Console.WriteLine(interval.TotalDays);         // 1.0854642476851852
             Console.WriteLine(interval.TotalHours);        // 26.051141944444446
             Console.WriteLine(interval.TotalMinutes);      // 1563.0685166666667
             Console.WriteLine(interval.TotalSeconds);      // 93784.111
             Console.WriteLine(interval.TotalMilliseconds); // 93784111
+            Console.WriteLine(interval.Days);              // 1
+            Console.WriteLine(interval.Hours);             // 2
+            Console.WriteLine(interval.Minutes);           // 3
+            Console.WriteLine(interval.Seconds);           // 4
+            Console.WriteLine(interval.Milliseconds);      // 111
 
-            Console.WriteLine(interval.Days);         // 1
-            Console.WriteLine(interval.Hours);        // 2
-            Console.WriteLine(interval.Minutes);      // 3
-            Console.WriteLine(interval.Seconds);      // 4
-            Console.WriteLine(interval.Milliseconds); // 111
+            // 経過時間の取得
+            Stopwatch stopWatch = new Stopwatch();
+            stopWatch.Start();
+            Thread.Sleep(3000);
+            stopWatch.Stop();
+            TimeSpan elapsed = stopWatch.Elapsed;
+            Console.WriteLine(elapsed);                   // "00:00:03.0091434"
+            Console.WriteLine(elapsed.TotalMilliseconds); // 3009.1434
         }
 
-
     }
-
 
 }
