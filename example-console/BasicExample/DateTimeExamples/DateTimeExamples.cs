@@ -70,12 +70,12 @@ namespace BasicExample.DateTimeExamples
             Console.WriteLine(zone1dt);   // "2023/04/05 7:34:56"  (UTC+3:00)
         }
 
-        [Fact(DisplayName = "サポートするタイムゾーン一覧")]
+        [Fact(DisplayName = "サポートする標準タイムゾーン一覧")]
         public void Example2a()
         {
             var timeZones = TimeZoneInfo.GetSystemTimeZones();
             foreach(var tz in timeZones)
-                Console.WriteLine("[{0,-31}]: {2}", tz.Id, tz.BaseUtcOffset, tz.DisplayName);
+                Console.WriteLine("[{0,-31}]: {1}", tz.Id, tz.DisplayName);
             // ...
             // [Cape Verde Standard Time       ]: (UTC-01:00) カーボベルデ諸島
             // [UTC                            ]: (UTC) Coordinated Universal Time
