@@ -1,22 +1,15 @@
 ﻿using BasicExample.Misc;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
 using System.Threading;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace BasicExample.DateTimeExamples
 {
-    public class DateTimeExamples
+    public class DateTimeExamples : BaseTests
     {
-        private ConsoleEmulator Console { get; }
-
-        public DateTimeExamples(ITestOutputHelper output)
-        {
-            Console = new ConsoleEmulator(output);
-        }
+        public DateTimeExamples(ITestOutputHelper output) : base(output) { }
 
         [Fact(DisplayName = "基本")]
         public void Example1()
@@ -74,7 +67,7 @@ namespace BasicExample.DateTimeExamples
         public void Example2a()
         {
             var timeZones = TimeZoneInfo.GetSystemTimeZones();
-            foreach(var tz in timeZones)
+            foreach (var tz in timeZones)
                 Console.WriteLine("[{0,-31}]: {1}", tz.Id, tz.DisplayName);
             // ...
             // [Cape Verde Standard Time       ]: (UTC-01:00) カーボベルデ諸島
