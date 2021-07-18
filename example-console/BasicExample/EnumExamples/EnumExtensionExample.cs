@@ -49,10 +49,19 @@ namespace BasicExample.EnumExamples
     /// </summary>
     public static class EnumExtensions
     {
-        // 書込みがない場合はスレッドセーフ
+        // 参考）
+        // 読み取りのみの場合、Dictionary<,>はスレッドセーフ
         // https://docs.microsoft.com/ja-jp/dotnet/api/system.collections.generic.dictionary-2?view=netcore-3.1#thread-safety
+
+        /// <summary>
+        /// 表示名ディクショナリ
+        /// </summary>
         private static Dictionary<Enum, string> _displayNameDic = new Dictionary<Enum, string>();
-        private static Dictionary<Enum, string> _valueDic = new Dictionary<Enum, string>();
+
+        /// <summary>
+        /// 文字列値ディクショナリ
+        /// </summary>
+        private static Dictionary<Enum, string> _strValDic = new Dictionary<Enum, string>();
 
         // 使用時の性能向上のため、クラスロード時に纏めて初期化する。
         static EnumExtensions()
@@ -61,13 +70,14 @@ namespace BasicExample.EnumExamples
             Assembly assembly = typeof(EnumExtensions).Assembly;
             var enumTypes = assembly.GetTypes().Where(e => e.IsEnum).ToArray();
 
-            // 列挙体で特定属性が指定されている値がある場合、当該属性の表示名をキャッシュ
+            // 列挙体で属性指定がある場合、表示名と文字列値をキャッシュ
             foreach (var type in enumTypes)
             {
                 // 列挙体に含まれる全ての値を取得(列挙体の値自身もEnum型)
-                var vals = Enum.GetValues(type).OfType<Enum>().ToArray(); // System.Arrayから配列に変換
+                // (System.Arrayから配列に変換)
+                var vals = Enum.GetValues(type).OfType<Enum>().ToArray();
 
-                // 属性が指定された値がある場合、表示名を追加
+                // 属性が指定された値がある場合、表示名と文字列値を追加
                 foreach (var v in vals)
                 {
                     var mi = type.GetMember(v.ToString()).FirstOrDefault();
@@ -75,17 +85,27 @@ namespace BasicExample.EnumExamples
                     if (attr != null)
                     {
                         _displayNameDic[v] = attr.DisplayName;
-                        _valueDic[v] = attr.Value;
+                        _strValDic[v] = attr.Value;
                     }
                 }
             }
         }
 
+        /// <summary>
+        /// 表示名を取得する。
+        /// </summary>
+        /// <param name="e">列挙体値</param>
+        /// <returns>表示名</returns>
         public static string GetDisplayName(this Enum e)
             => _displayNameDic.ContainsKey(e) ? _displayNameDic[e]: null;
 
-        public static string GetValue(this Enum e)
-            => _valueDic.ContainsKey(e) ? _valueDic[e] : null;
+        /// <summary>
+        /// 文字列値を取得する。
+        /// </summary>
+        /// <param name="e">列挙体値</param>
+        /// <returns>文字列値</returns>
+        public static string GetStrValue(this Enum e)
+            => _strValDic.ContainsKey(e) ? _strValDic[e] : null;
     }
 
     /// <summary>
@@ -98,14 +118,15 @@ namespace BasicExample.EnumExamples
         [Fact(DisplayName = "基本")]
         public void Example1()
         {
-            Console.WriteLine(EnumExTest1.Val1.GetDisplayName());
-            Console.WriteLine(EnumExTest1.Val1.GetValue());
+            Console.WriteLine(EnumExTest1.Val1.ToString());       // "Val1"
+            Console.WriteLine((int)EnumExTest1.Val1);             // "0"
+            Console.WriteLine(EnumExTest1.Val1.GetDisplayName()); // "値1"
+            Console.WriteLine(EnumExTest1.Val1.GetStrValue());    // "01"
 
-            Console.WriteLine(EnumExTest2.Yes.GetDisplayName());
-            Console.WriteLine(EnumExTest2.Yes.GetValue());
-
-            var e1 = (EnumExTest2)1;
-            Console.WriteLine(e1.GetDisplayName());
+            Console.WriteLine(EnumExTest2.Yes.ToString());       // "Yes"
+            Console.WriteLine((int)EnumExTest2.Yes);             // "1"
+            Console.WriteLine(EnumExTest2.Yes.GetDisplayName()); // "はい"
+            Console.WriteLine(EnumExTest2.Yes.GetStrValue());    // "1"
         }
 
     }
