@@ -231,7 +231,7 @@ namespace BasicExample.XunitExamples
 
     // Dictionary<string, DData1>に特化した等価比較クラス
     // (より汎用的なDictionary<K, V>の定義も可能だが、Vに対応するDData1クラスで
-    // IEqualityComparerの実装が必要となってしまうので、ここでは特化している。)
+    // Equals()の実装が必要となってしまうので、ここでは特化している。)
     public class DicComparer : IEqualityComparer<Dictionary<string, DData1>>
     {
         public bool Equals(
