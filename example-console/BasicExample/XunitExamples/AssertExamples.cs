@@ -12,7 +12,7 @@ namespace BasicExample.XunitExamples
     public class AssertExamples
     {
         [Fact(DisplayName = "基本的な検証")]
-        public async Task AssertBasic()
+        public void AssertBasic()
         {
             // 同値
             Assert.Equal(1, 1);
@@ -20,7 +20,7 @@ namespace BasicExample.XunitExamples
             Assert.Equal("123", "123");
             Assert.Equal("123", 123.ToString());
             Assert.Equal(new string[] { "a", "b" }, "a,b".Split(','));
-
+            
             // オブジェクト同値
             var obj = new string("test");
             var obj1 = new string("test");
@@ -119,7 +119,7 @@ namespace BasicExample.XunitExamples
             Assert.Equal(dic1, dic2);
         }
 
-        [Fact(DisplayName = "オブジェクトリストの検証")]
+        [Fact(DisplayName = "独自クラスを格納するリストの検証")]
         public void AssertObjectCollection()
         {
             // 適切なEquals/GetHashCodeの実装がないリストは検証不可
@@ -137,7 +137,7 @@ namespace BasicExample.XunitExamples
             Assert.Equal(data2List1, data2List2);
         }
 
-        [Fact(DisplayName = "オブジェクトディクショナリの検証")]
+        [Fact(DisplayName = "独自クラスを格納するディクショナリの検証")]
         public void AssertObjectDictionary()
         {
             // Dictionary<K, V>におけるVに対してオブジェクトを指定する想定。
@@ -229,12 +229,13 @@ namespace BasicExample.XunitExamples
             => HashCode.Combine(Val);
     }
 
-    // Dictionary<string, Data1>に特化した等価比較クラス
-    // (より汎用的なDictionary<K, V>の定義も可能だが、Vに対応するData1クラスで
+    // Dictionary<string, DData1>に特化した等価比較クラス
+    // (より汎用的なDictionary<K, V>の定義も可能だが、Vに対応するDData1クラスで
     // IEqualityComparerの実装が必要となってしまうので、ここでは特化している。)
     public class DicComparer : IEqualityComparer<Dictionary<string, DData1>>
     {
-        public bool Equals([AllowNull] Dictionary<string, DData1> x, [AllowNull] Dictionary<string, DData1> y)
+        public bool Equals(
+            [AllowNull] Dictionary<string, DData1> x, [AllowNull] Dictionary<string, DData1> y)
         {
             if (x == null && y == null) return true;
             if (x == null || y == null) return false;
