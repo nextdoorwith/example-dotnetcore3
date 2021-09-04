@@ -145,9 +145,32 @@ namespace BasicExample.DateTimeExamples
             stopWatch.Start();
             Thread.Sleep(3000);
             stopWatch.Stop();
+
+            // Elapsed(TimeSpan)からの経過時間取得
             TimeSpan elapsed = stopWatch.Elapsed;
-            Console.WriteLine(elapsed);                   // "00:00:03.0091434"
-            Console.WriteLine(elapsed.TotalMilliseconds); // 3009.1434
+            double eMili = elapsed.TotalMilliseconds;
+            double eMicr = eMili * 1000;
+            double eNano = eMili * 1000 * 1000;
+            Console.WriteLine($"===== from Stopwatch.Elapsed");
+            Console.WriteLine($"elapsed={elapsed}");    // 00:00:03.0060116
+            Console.WriteLine($"1) mili  sec={eMili}"); // 3006.0116
+            Console.WriteLine($"2) micro sec={eMicr}"); // 3006011.5999999996
+            Console.WriteLine($"3) nano  sec={eNano}"); // 3006011599.9999995
+
+            // ElapsedTicks(long)からの経過時間取得
+            bool hrEnabled = Stopwatch.IsHighResolution;
+            long freq = Stopwatch.Frequency;
+            long ticks = stopWatch.ElapsedTicks;
+            double tMili = (double)ticks * 1000 / freq;
+            double tMicr = (double)ticks * 1000 * 1000 / freq;
+            double tNano = (double)ticks * 1000 * 1000 * 1000 / freq;
+            Console.WriteLine($"===== from Stopwatch.ElapsedTicks");
+            Console.WriteLine($"high-resolution performance counter={hrEnabled}"); // true
+            Console.WriteLine($"Frequency={freq:#,0}[Ticks/sec])"); // 10,000,000
+            Console.WriteLine($"elapsedTicks={ticks}"); // 30060116
+            Console.WriteLine($"1) mili  sec={tMili}"); // 3006.0116
+            Console.WriteLine($"2) micro sec={tMicr}"); // 3006011.6
+            Console.WriteLine($"3) nano  sec={tNano}"); // 3006011600
         }
 
     }
