@@ -139,8 +139,12 @@ namespace BasicExample.DateTimeExamples
             Console.WriteLine(interval.Minutes);           // 3
             Console.WriteLine(interval.Seconds);           // 4
             Console.WriteLine(interval.Milliseconds);      // 111
+        }
 
-            // 経過時間の取得
+        [Fact(DisplayName = "日付の差分(Stopwatch使用)")]
+        public void Example6()
+        {
+            // 経過時間の計測
             Stopwatch stopWatch = new Stopwatch();
             stopWatch.Start();
             Thread.Sleep(3000);
