@@ -1,0 +1,7 @@
+﻿[*.cs]
+
+# S2699: Tests should include assertions
+dotnet_diagnostic.S2699.severity = silent
+
+# S125: Sections of code should not be commented out
+dotnet_diagnostic.S125.severity = silent
