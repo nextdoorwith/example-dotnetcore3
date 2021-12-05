@@ -6,7 +6,7 @@ using Xunit;
 
 namespace BasicExample.XunitExamples
 {
-    public class MockExamples
+    public class MoqExamples
     {
         [Fact(DisplayName = "基本的なモック")]
         public async Task BasicMock()
@@ -279,136 +279,49 @@ namespace BasicExample.XunitExamples
             Assert.Equal(100, target2.Add(1, 2));
         }
 
-        [Fact(DisplayName = "プロパティ操作の検証")]
-        public void AssertProperty()
+        // サンプルで汎用的に使用するテスト用クラス
+        public interface ITarget
         {
-            var targetMock = new Mock<ITarget>();
-            ITarget target = targetMock.Object;
+            public string StrProp { get; set; }
+            public string ReadonlyStrProp { get; }
+            public int IntProp { get; set; }
+            public int ReadonlyIntProp { get; }
 
-            targetMock.SetupProperty(o => o.StrProp);
+            public int Add(int x, int y);
+            public Task<int> AddAsync(int x, int y);
+            public bool Send(string message);
 
-            target.StrProp = "test";
-            Assert.Equal("test", target.StrProp);
+            public string Measure1(int str);
+            public string Measure2(int str);
+
+            public int Increment();
+
+            public string GetDate();
+
+            public void Validate(string arg);
+            public Task ValidateAsync(string arg);
+
+            public void TestAction1();
+            public void TestAction2(string arg);
         }
 
-        [Fact(DisplayName = "プロパティ操作の一括検証")]
-        public void VerifyPropertiesAtOnce()
+        // テスト対象クラス
+        // DIされたIMailServiceを使って2回メッセージを送信する。
+        public class MessageNotifier
         {
-            var targetMock = new Mock<ITarget>();
-            ITarget target = targetMock.Object;
-
-            // 一括検証の対象とするためにVerifiable()を指定
-            targetMock
-                .SetupGet(o => o.StrProp)
-                .Verifiable();
-            targetMock
-                .SetupSet(o => o.IntProp = 100) // 検証時の期待値(初期値設定ではない！)
-                .Verifiable();
-
-            _ = target.StrProp;
-            target.IntProp = 1;
-            target.IntProp = 100;
-            target.IntProp = 100;
-            target.IntProp = 200;
-
-            targetMock.Verify(); // 一括検証(検証対象を纏めて検証)
-
-            // 値を保持していないので、最終的な値を検証できない。
-            //Assert.Equal(200, target.IntProp); // NG
-            Assert.Equal(0, target.IntProp);
+            private readonly IMailService _mailService;
+            public MessageNotifier(IMailService mailService) => _mailService = mailService;
+            public void SendAllMessage()
+            {
+                _mailService.SendMessage("message1");
+                _mailService.SendMessage("message2");
+            }
+        }
+        // モック対象
+        public interface IMailService
+        {
+            public bool SendMessage(string message);
         }
 
-        [Fact(DisplayName = "プロパティ操作の個別検証")]
-        public void VerifyProperties()
-        {
-            var targetMock = new Mock<ITarget>();
-            ITarget target = targetMock.Object;
-
-            _ = target.StrProp;
-            target.IntProp = 1;
-            target.IntProp = 100;
-            target.IntProp = 100;
-            target.IntProp = 200;
-
-            targetMock.VerifyGet(o => o.StrProp); // 1回のみ(既定)
-            targetMock.VerifySet(o => o.IntProp = 100, Times.Exactly(2)); // 2回
-            targetMock.VerifySet(o => o.IntProp = 300, Times.Never); // 0回
-
-            // 値を保持していないので、最終的な値を検証できない。
-            //Assert.Equal(200, target.IntProp); // NG
-            Assert.Equal(0, target.IntProp);
-        }
-
-        [Fact(DisplayName = "VerifySet()の検証動作")]
-        public void VerifySetVariation()
-        {
-            var targetMock = new Mock<ITarget>();
-            ITarget target = targetMock.Object;
-
-            target.IntProp = 100;
-            target.IntProp = 101;
-            target.IntProp = 101;
-            target.IntProp = 102;
-            target.IntProp = 102;
-            target.IntProp = 102; // 最終値
-
-            // プロパティを個別に検証
-            targetMock.VerifySet(o => o.IntProp = 100);                    // 1回のみ
-            targetMock.VerifySet(o => o.IntProp = 100, Times.Once);        // 1回のみ
-            targetMock.VerifySet(o => o.IntProp = 101, Times.AtLeastOnce); // 1回以上
-            targetMock.VerifySet(o => o.IntProp = 102, Times.AtLeast(2));  // 2回以上
-            targetMock.VerifySet(o => o.IntProp = 102, Times.Exactly(3));  // 3回
-            targetMock.VerifySet(o => o.IntProp = 999, Times.Never);       // 0回
-
-            // 値を保持していないので、最終的な値を検証できない。
-            //Assert.Equal(102, target.IntProp); // NG
-            Assert.Equal(0, target.IntProp);
-        }
-    }
-
-    // サンプルで汎用的に使用するテスト用クラス
-    public interface ITarget
-    {
-        public string StrProp { get; set; }
-        public string ReadonlyStrProp { get; }
-        public int IntProp { get; set; }
-        public int ReadonlyIntProp { get; }
-        public bool BoolProp { get; set; }
-        public bool ReadonlyBoolProp { get; }
-
-        public int Add(int x, int y);
-        public Task<int> AddAsync(int x, int y);
-        public bool Send(string message);
-
-        public string Measure1(int str);
-        public string Measure2(int str);
-
-        public int Increment();
-
-        public string GetDate();
-
-        public void Validate(string arg);
-        public Task ValidateAsync(string arg);
-
-        public void TestAction1();
-        public void TestAction2(string arg);
-    }
-
-    // テスト対象クラス
-    // DIされたIMailServiceを使って2回メッセージを送信する。
-    public class MessageNotifier
-    {
-        private readonly IMailService _mailService;
-        public MessageNotifier(IMailService mailService) => _mailService = mailService;
-        public void SendAllMessage()
-        {
-            _mailService.SendMessage("message1");
-            _mailService.SendMessage("message2");
-        }
-    }
-    // モック対象
-    public interface IMailService
-    {
-        public bool SendMessage(string message);
     }
 }
