@@ -20,7 +20,7 @@ namespace BasicExample.XunitExamples
             Assert.Equal("123", "123");
             Assert.Equal("123", 123.ToString());
             Assert.Equal(new string[] { "a", "b" }, "a,b".Split(','));
-            
+
             // オブジェクト同値
             var obj = new string("test");
             var obj1 = new string("test");
@@ -90,7 +90,7 @@ namespace BasicExample.XunitExamples
         }
 
         [Fact(DisplayName = "コレクションの基本的な検証")]
-        public void AssertCollection()
+        public void AssertCollectionBasic()
         {
             // 検証メソッドの引数はIEnumerable型なので配列やリスト等を指定可
 
@@ -118,6 +118,22 @@ namespace BasicExample.XunitExamples
             var dic2 = new Dictionary<string, string>() { ["k1"] = "v1", ["k2"] = "v2" };
             Assert.Equal(dic1, dic2);
         }
+
+        [Fact(DisplayName = "コレクションの内容を検証")]
+        public void AssertCollectionContent()
+        {
+            var list = new List<TestData>() { new TestData("a", 1, true), new TestData("b", 2, true) };
+
+            // 要素毎に異なる検証（全ての要素に対する検証ラムダ式の指定が必須）
+            Assert.Collection(list,
+                e => { Assert.Equal("a", e.Name); Assert.Equal(1, e.Count); Assert.True(e.Succeeded); },
+                e => { Assert.Equal("b", e.Name); Assert.Equal(2, e.Count); Assert.True(e.Succeeded); }
+            );
+
+            // 全ての要素に対する検証（単一の検証ラムダ式のみ指定可能）
+            Assert.All(list, e => Assert.True(e.Succeeded));
+        }
+
 
         [Fact(DisplayName = "独自クラスを格納するリストの検証")]
         public void AssertObjectCollection()
@@ -175,6 +191,19 @@ namespace BasicExample.XunitExamples
     }
 
     // オブジェクトリストの検証で使用するサンプルクラス
+
+    public class TestData
+    {
+        public string Name { get; }
+        public int Count { get; }
+        public bool Succeeded { get; }
+        public TestData(string name, int count, bool succeeded)
+        {
+            Name = name;
+            Count = count;
+            Succeeded = succeeded;
+        }
+    }
 
     public class LData1
     {
