@@ -1,6 +1,7 @@
 ﻿using BasicExample.Misc;
 using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.Threading;
 using Xunit;
 using Xunit.Abstractions;
@@ -11,21 +12,36 @@ namespace BasicExample.DateTimeExamples
     {
         public DateTimeExamples(ITestOutputHelper output) : base(output) { }
 
-        [Fact(DisplayName = "基本")]
-        public void Example1()
+        [Fact(DisplayName = "システム日時・日付の取得")]
+        public void Example1a()
         {
-            // システム日時の取得
-            Console.WriteLine(DateTime.Now);    // "2021/07/08 21:30:06"
-            Console.WriteLine(DateTime.Today);  // "2021/07/08 0:00:00"
-            Console.WriteLine(DateTime.UtcNow); // "2021/07/08 12:30:06"
+            // システム日時の取得 ※時分秒含む
+            Console.WriteLine(DateTime.Now);      // "2021/07/08 21:30:06"
+            Console.WriteLine(DateTime.UtcNow);   // "2021/07/08 12:30:06"
 
-            // 特定日時の生成
+            // システム日付の取得 ※日付のみ
+            Console.WriteLine(DateTime.Now.Date); // "2021/07/08 0:00:00"
+            Console.WriteLine(DateTime.Today);    // "2021/07/08 0:00:00"
+        }
+
+        [Fact(DisplayName = "文字列・整数からのDateTime生成")]
+        public void Example1b()
+        {
+            // 文字列からの日時生成
+            var p1 = DateTime.Parse("1234/05/06 23:56:01");
+            Console.WriteLine(p1); // "1234/05/06 23:56:01"
+            var p2 = DateTime.ParseExact("12340506 235601", "yyyyMMdd HHmmss", null);
+            Console.WriteLine(p2); // "1234/05/06 23:56:01"
+
+            // 整数からの日時の生成
             DateTime dt = new DateTime(2001, 2, 3, 4, 5, 6, 987);
             Console.WriteLine(dt); // "2001/02/03 4:05:06"
+        }
 
-            // 最小・最大
-            Console.WriteLine(DateTime.MinValue.ToString("O")); // "0001-01-01T00:00:00.0000000"
-            Console.WriteLine(DateTime.MaxValue.ToString("O")); // "9999-12-31T23:59:59.9999999"
+        [Fact(DisplayName = "DateTimeからの年月日・時分秒・曜日の取得")]
+        public void Example1c()
+        {
+            DateTime dt = new DateTime(2001, 2, 3, 4, 5, 6, 987);
 
             // 年/月/日/時/分/秒の取得
             Console.WriteLine(dt.Date);        // "2001/02/03 0:00:00"
@@ -40,6 +56,10 @@ namespace BasicExample.DateTimeExamples
             // 曜日
             Console.WriteLine(dt.DayOfWeek);      // "Saturday"(DayOfWeek列挙体)
             Console.WriteLine((int)dt.DayOfWeek); // 6 (cf. Sunday = 0)
+
+            // 最小・最大
+            Console.WriteLine(DateTime.MinValue.ToString("O")); // "0001-01-01T00:00:00.0000000"
+            Console.WriteLine(DateTime.MaxValue.ToString("O")); // "9999-12-31T23:59:59.9999999"
         }
 
         [Fact(DisplayName = "タイムゾーン変換")]
@@ -68,7 +88,7 @@ namespace BasicExample.DateTimeExamples
         {
             var timeZones = TimeZoneInfo.GetSystemTimeZones();
             foreach (var tz in timeZones)
-                Console.WriteLine("[{0,-31}]: {1}", tz.Id, tz.DisplayName);
+                Console.WriteLine("[{0,-31}]: {1}{2}", tz.Id, tz.StandardName, tz.DisplayName);
             // ...
             // [Cape Verde Standard Time       ]: (UTC-01:00) カーボベルデ諸島
             // [UTC                            ]: (UTC) Coordinated Universal Time
@@ -103,8 +123,8 @@ namespace BasicExample.DateTimeExamples
             // カレントカルチャーで良い場合は第3引数はnullで良い
             // https://docs.microsoft.com/en-us/dotnet/api/system.datetime.parseexact?view=net-5.0#System_DateTime_ParseExact_System_String_System_String_System_IFormatProvider_
             // "If provider is null, the CultureInfo object that corresponds to the current culture is used."
-            var p1 = DateTime.ParseExact("12340506", "yyyyMMdd", null);
-            Console.WriteLine(p1); // "1234/05/06 0:00:00"
+            var p1 = DateTime.ParseExact("12340506 235601", "yyyyMMdd HHmmss", null);
+            Console.WriteLine(p1); // "1234/05/06 23:56:01"
         }
 
         [Fact(DisplayName = "月末月初")]
